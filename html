@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emissão de Nota Fiscal de Serviço</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Emissão de Nota Fiscal de Serviço (NFS-e)</h1>
+
+    <div>
+        <div class="form-group">
+            <label for="valorVenda">Valor da Venda:</label>
+            <input type="number" id="valorVenda" placeholder="Digite o valor da venda">
+        </div>
+        <div class="form-group">
+            <label for="itens">Itens Vendidos:</label>
+            <input type="text" id="itens" placeholder="Descreva os itens vendidos">
+        </div>
+        <div class="form-group">
+            <label for="irpf">Porcentagem do IRPF (%):</label>
+            <input type="number" id="irpf" placeholder="Digite a porcentagem do IRPF">
+        </div>
+        <div class="form-group">
+            <label for="pis">Porcentagem do PIS (%):</label>
+            <input type="number" id="pis" placeholder="Digite a porcentagem do PIS">
+        </div>
+        <div class="form-group">
+            <label for="cofins">Porcentagem do COFINS (%):</label>
+            <input type="number" id="cofins" placeholder="Digite a porcentagem do COFINS">
+        </div>
+        <div class="form-group">
+            <label for="inss">Porcentagem do INSS (%):</label>
+            <input type="number" id="inss" placeholder="Digite a porcentagem do INSS">
+        </div>
+        <div class="form-group">
+            <label for="issqn">Porcentagem do ISSQN (%):</label>
+            <input type="number" id="issqn" placeholder="Digite a porcentagem do ISSQN">
+        </div>
+
+        <button onclick="gerarNotaFiscal()">Gerar Nota Fiscal</button>
+    </div>
+
+    <div class="output" id="notaFiscal"></div>
+
+    <script>
+        function gerarNotaFiscal() {
+            const valorVenda = parseFloat(document.getElementById('valorVenda').value);
+            const itens = document.getElementById('itens').value;
+            const irpf = parseFloat(document.getElementById('irpf').value) / 100;
+            const pis = parseFloat(document.getElementById('pis').value) / 100;
+            const cofins = parseFloat(document.getElementById('cofins').value) / 100;
+            const inss = parseFloat(document.getElementById('inss').value) / 100;
+            const issqn = parseFloat(document.getElementById('issqn').value) / 100;
+
+            if (isNaN(valorVenda)) {
+                alert('Por favor, insira um valor válido para a venda.');
+                return;
+            }
+
+            const impostos = {
+                IRPF: valorVenda * irpf,
+                PIS: valorVenda * pis,
+                COFINS: valorVenda * cofins,
+                INSS: valorVenda * inss,
+                ISSQN: valorVenda * issqn
+            };
+
+            const totalImpostos = Object.values(impostos).reduce((acc, curr) => acc + curr, 0);
+            const valorLiquido = valorVenda - totalImpostos;
+
+            const notaFiscalHTML = `
+                <h2>Nota Fiscal de Serviço</h2>
+                <p><strong>Itens Vendidos:</strong> ${itens}</p>
+                <p><strong>Valor da Venda:</strong> R$ ${valorVenda.toFixed(2)}</p>
+                <h3>Impostos Calculados:</h3>
+                <ul>
+                    ${Object.entries(impostos).map(([key, value]) => `<li>${key}: R$ ${value.toFixed(2)}</li>`).join('')}
+                </ul>
+                <p><strong>Total de Impostos:</strong> R$ ${totalImpostos.toFixed(2)}</p>
+                <p><strong>Valor Líquido:</strong> R$ ${valorLiquido.toFixed(2)}</p>
+            `;
+
+            document.getElementById('notaFiscal').innerHTML = notaFiscalHTML;
+        }
+    </script>
+</body>
+</html>
